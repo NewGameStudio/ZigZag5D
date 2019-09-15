@@ -27,6 +27,7 @@ namespace MapCore
         };
 
         private Transform _previousTile;
+        private Vector3 _previousTilePosition;
         private int _previousDirection;
 
         private GameObjectsPool _pool;
@@ -58,10 +59,11 @@ namespace MapCore
 
             _generatedTiles.Enqueue(platform);
 
-            platform.position = _player.transform.position - Vector3.up * (_player.transform.localScale.y + platform.localScale.y / 2);
             platform.localScale = new Vector3(3, 1, 3);
+            platform.position = _player.transform.position - Vector3.up * (_player.transform.localScale.y + platform.localScale.y / 2);
 
             _previousTile = platform;
+            _previousTilePosition = platform.position;
             _previousDirection = -1;
 
             CreateNextTiles(0, 3);
@@ -78,13 +80,16 @@ namespace MapCore
             for (int i = 0; i < count; i++)
             {
                 Transform tile = _pool.Instantiate().transform;
+                Vector3 tileTargetPosition = _previousTilePosition + (direction * (_previousTile.localScale.x / 2 + 0.5f));
 
-                tile.position = _previousTile.position + (direction * (_previousTile.localScale.x / 2 + 0.5f));
                 tile.localScale = Vector3.one;
+
+                StartCoroutine(PlaceTile(tile, tileTargetPosition, 0.5f));
 
                 _generatedTiles.Enqueue(tile);
 
                 _previousTile = tile;
+                _previousTilePosition = tileTargetPosition;
                 _previousDirection = directionIndex;
 
                 onTileAddedCallback?.Invoke(tile);
@@ -97,28 +102,53 @@ namespace MapCore
 
             if ((tile.position.z + tile.localScale.x / 2 + _tileFallingDistance) < _player.transform.position.z)
             {
-                StartCoroutine(DropTile(_generatedTiles.Dequeue(), 1f));
+                StartCoroutine(DropTile(_generatedTiles.Dequeue(), 0.8f));
                 onTilePassed?.Invoke(tile);
             }
         }
 
-        private IEnumerator DropTile(Transform tile, float timeInSeconds)
+
+        private IEnumerator PlaceTile(Transform tile, Vector3 targetPosition, float time)
         {
             WaitForEndOfFrame wait = new WaitForEndOfFrame();
 
             Vector3 direction = new Vector3(
-                Random.Range(-1, 2),
-                Random.Range(-1, 2),
-                Random.Range(-1, 1)).normalized;
+                Random.Range(-1f, 1f),
+                Random.Range(-1f, 1f),
+                1f).normalized;
 
-            float time = 0;
-            while (time < timeInSeconds)
+            Vector3 startPosition = targetPosition + direction * 8;
+
+            float timePassed = 0f;
+            while (timePassed <= time)
             {
-                tile.transform.position += direction * 12 * Time.deltaTime;
+                tile.transform.position = Vector3.Lerp(startPosition, targetPosition, timePassed / time);
+                timePassed += Time.deltaTime;
 
-                tile.transform.localScale -= Vector3.one * timeInSeconds * Time.deltaTime;
+                yield return wait;
+            }
 
-                time += Time.deltaTime;
+            tile.transform.position = targetPosition;
+        }
+
+        private IEnumerator DropTile(Transform tile, float time)
+        {
+            WaitForEndOfFrame wait = new WaitForEndOfFrame();
+
+            Vector3 direction = new Vector3(
+                Random.Range(-1f, 1f),
+                Random.Range(-1f, 1f),
+                -1f).normalized;
+
+            Vector3 startPosition = tile.position;
+            Vector3 targetPosition = startPosition + direction * 15;
+
+            float timePassed = 0;
+            while (timePassed < time)
+            {
+                tile.transform.position = Vector3.Lerp(startPosition, targetPosition, timePassed / time);
+
+                timePassed += Time.deltaTime;
 
                 yield return wait;
             }
@@ -149,7 +179,7 @@ namespace MapCore
         {
             ComputePassedTiles();
 
-            if (Vector3.Distance(_player.transform.position, _previousTile.position) < _generateDistance)
+            if (Vector3.Distance(_player.transform.position, _previousTilePosition) < _generateDistance)
                 CreateNextTiles();
         }
 

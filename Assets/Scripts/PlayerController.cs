@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _movementSpeed = 1;
     [SerializeField] private float _rotationSpeed = 10;
     [SerializeField] private float _acceleration = 0.1f;
-    [SerializeField] private bool _enableControl;
 
     private int _currentRotation = 0;
     private float[] _rotations = new float[]
@@ -15,25 +14,6 @@ public class PlayerController : MonoBehaviour
         0, 45, 90, 45, 0, -45, -90, -45
     };
 
-    public event Action onFall;
-    private bool _onFallExecuted = false;
-
-    public bool falling { get; private set; }
-    public bool enableControl
-    {
-        get
-        {
-            return _enableControl;
-        }
-
-        set
-        {
-            if (falling)
-                return;
-
-            _enableControl = value;
-        }
-    }
     public float movementSpeed
     {
         get
@@ -46,42 +26,31 @@ public class PlayerController : MonoBehaviour
             _movementSpeed = Mathf.Clamp(value, 1, 3f);
         }
     }
+    public bool isFreezed
+    {
+        get
+        {
+            return enabled;
+        }
+    }
+    public bool isFalling { get; private set; }
 
 
     private void Update()
     {
-        bool grounded = CheckGround();
+        isFalling = isFalling || !CheckGround();
 
-        if (!grounded && !falling)
+        if (isFalling)
         {
-            falling = true;
+            Falling();
             return;
         }
 
-        if (grounded && falling)
-            falling = false;
-
-        if (falling)
-        {
-            if (!_onFallExecuted)
-            {
-                onFall?.Invoke();
-                _onFallExecuted = true;
-            }
-
-            _enableControl = false;
-
-            Falling();
-        }
-        else if (_enableControl)
-        {
-            ComputeInput();
-            ComputeRotation();
-            ComputeMovement();
-            IncreaseSpeed();
-        }
+        ComputeInput();
+        ComputeRotation();
+        ComputeMovement();
+        IncreaseSpeed();
     }
-
 
     private bool CheckGround()
     {
@@ -123,15 +92,24 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void Restart(Vector3 restartPoint)
+    public void Freeze()
     {
+        enabled = false;
+    }
+
+    public void Unfreeze()
+    {
+        enabled = true;
+    }
+
+    public void Reset()
+    {
+        isFalling = false;
+
+        _movementSpeed = 1;
+
         _currentRotation = 0;
-        _onFallExecuted = false;
 
-        falling = false;
-        movementSpeed = 0;
-
-        transform.position = restartPoint;
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, _rotations[0], transform.eulerAngles.z);
     }
 }

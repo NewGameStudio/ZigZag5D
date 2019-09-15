@@ -1288,7 +1288,6 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
-  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -1374,28 +1373,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 547318722}
---- !u!114 &963194230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fcd04d47758f0341b2fb46057ab6d67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _camera: {fileID: 0}
-  _colorIndex: 0
-  _time: 0
-  _colors:
-  - r: 1
-    g: 1
-    b: 1
-    a: 1
-  _colorLerpTime: 5
-  _colorFixTime: 10
 --- !u!1 &988575637
 GameObject:
   m_ObjectHideFlags: 0
@@ -1912,7 +1889,7 @@ MonoBehaviour:
   _player: {fileID: 226126840}
   _tilePrefab: {fileID: 1415073930606878734, guid: 380e29af4eaf4d44e9c9f28bff0e0425,
     type: 3}
-  _generateDistance: 30
+  _generateDistance: 9
   _tileFallingDistance: 0.5
   _tilesCreatingDirections:
   - {x: 0, y: 0, z: 1}

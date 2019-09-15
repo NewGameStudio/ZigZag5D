@@ -19,6 +19,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private Text _restartText;
 
     private MapMaster _mapMaster;
+    private bool _onLoseGame = false;
     private bool _onPause = true;
 
 
@@ -47,33 +48,24 @@ public class GameMaster : MonoBehaviour
 
     private void CreateEventsHandlers()
     {
-        _player.onFall += () =>
-        {
-            _camera.followPlayer = false;
-
-            _restartText.gameObject.SetActive(true);
-
-            ScoresMaster.OnEndGame();
-        };
-
         FindObjectOfType<TilesManager>().onTilePassed += (t) => ScoresMaster.OnIncScore();
-
-        UIEvents.onPlayPressed += () =>
-        {
-            _menuWindow.HideImmediate();
-
-            _player.enableControl = true;
-
-            _onPause = false;
-        };
 
         UIEvents.onPausePressed += () =>
         {
             _menuWindow.Show();
 
-            _player.enableControl = false;
+            _player.Freeze();
 
             _onPause = true;
+        };
+
+        UIEvents.onPlayPressed += () =>
+        {
+            _menuWindow.HideImmediate();
+
+            _player.Unfreeze();
+
+            _onPause = false;
         };
 
         UIEvents.onQuitPressed += () =>
@@ -98,7 +90,10 @@ public class GameMaster : MonoBehaviour
 
         _mapMaster = GetComponent<MapMaster>();
 
-        _player.enableControl = false;
+        _player.Reset();
+        _player.Freeze();
+
+        _onLoseGame = false;
     }
 
     private void Start()
@@ -122,20 +117,37 @@ public class GameMaster : MonoBehaviour
         if (_onPause)
             return;
 
-        if (_player.falling && (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0)))
-            RestartGame();
+        if (_player.isFalling && !_onLoseGame)
+        {
+            _camera.followPlayer = false;
+
+            _restartText.gameObject.SetActive(true);
+
+            ScoresMaster.OnEndGame();
+
+            _onLoseGame = true;
+        }
+
+        if (_onLoseGame && (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0)))
+            StartCoroutine(RestartGame());
     }
 
-    private void RestartGame()
+    private IEnumerator RestartGame()
     {
         _restartText.gameObject.SetActive(false);
         _camera.followPlayer = true;
 
-        _player.Restart(Vector3.zero);
+        _player.Reset();
+        _player.Freeze();
+        _player.transform.position = Vector3.zero;
 
         _mapMaster.Restart();
 
-        _player.enableControl = true;
+        _onLoseGame = false;
+
+        yield return new WaitForSeconds(0.15f);
+
+        _player.Unfreeze();
 
         ScoresMaster.OnStartGame();
     }
