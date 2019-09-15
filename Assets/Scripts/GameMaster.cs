@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using MapCore;
@@ -19,8 +19,10 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private Text _restartText;
 
     private MapMaster _mapMaster;
-    private bool _onLoseGame = false;
-    private bool _onPause = true;
+    private bool _isGameLose = false;
+    private bool _isPause = true;
+
+    public event Action onLoseGame;
 
 
     private bool CheckComponents()
@@ -56,7 +58,7 @@ public class GameMaster : MonoBehaviour
 
             _player.Freeze();
 
-            _onPause = true;
+            _isPause = true;
         };
 
         UIEvents.onPlayPressed += () =>
@@ -64,8 +66,8 @@ public class GameMaster : MonoBehaviour
             _menuWindow.HideImmediate();
 
             _player.Unfreeze();
-
-            _onPause = false;
+            Debug.Log("OnPlayPressed");
+            _isPause = false;
         };
 
         UIEvents.onQuitPressed += () =>
@@ -93,7 +95,7 @@ public class GameMaster : MonoBehaviour
         _player.Reset();
         _player.Freeze();
 
-        _onLoseGame = false;
+        _isGameLose = false;
     }
 
     private void Start()
@@ -114,10 +116,10 @@ public class GameMaster : MonoBehaviour
         _scoreField.text = ScoresMaster.Score.ToString();
         _bestScoreField.text = ScoresMaster.BestScore.ToString();
 
-        if (_onPause)
+        if (_isPause)
             return;
 
-        if (_player.isFalling && !_onLoseGame)
+        if (_player.isFalling && !_isGameLose)
         {
             _camera.followPlayer = false;
 
@@ -125,11 +127,17 @@ public class GameMaster : MonoBehaviour
 
             ScoresMaster.OnEndGame();
 
-            _onLoseGame = true;
+            _isGameLose = true;
+
+            onLoseGame?.Invoke();
         }
 
-        if (_onLoseGame && (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0)))
+        if (_isGameLose && (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0)))
+        {
             StartCoroutine(RestartGame());
+
+            _isGameLose = false;
+        }
     }
 
     private IEnumerator RestartGame()
@@ -143,9 +151,7 @@ public class GameMaster : MonoBehaviour
 
         _mapMaster.Restart();
 
-        _onLoseGame = false;
-
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.2f);
 
         _player.Unfreeze();
 
