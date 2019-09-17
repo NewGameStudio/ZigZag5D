@@ -50,7 +50,7 @@ public class GameMaster : MonoBehaviour
 
     private void CreateEventsHandlers()
     {
-        FindObjectOfType<TilesManager>().onTilePassed += (t) => ScoresMaster.OnIncScore();
+        FindObjectOfType<TilesManager>().onTilePassed += (t) => ScoresMaster.IncScore();
 
         UIEvents.onPausePressed += () =>
         {
@@ -66,7 +66,7 @@ public class GameMaster : MonoBehaviour
             _menuWindow.HideImmediate();
 
             _player.Unfreeze();
-            Debug.Log("OnPlayPressed");
+
             _isPause = false;
         };
 
@@ -104,8 +104,6 @@ public class GameMaster : MonoBehaviour
 
         _mapMaster.Initialize();
 
-        _menuWindow.Show();
-
         _camera.followPlayer = true;
 
         CreateEventsHandlers();
@@ -119,25 +117,32 @@ public class GameMaster : MonoBehaviour
         if (_isPause)
             return;
 
-        if (_player.isFalling && !_isGameLose)
+        if (_isGameLose)
         {
-            _camera.followPlayer = false;
+            if (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0))
+            {
+                StartCoroutine(RestartGame());
 
-            _restartText.gameObject.SetActive(true);
-
-            ScoresMaster.OnEndGame();
+                _isGameLose = false;
+            }
+        }
+        else if (_player.isFalling)
+        {
+            OnGameLose();
 
             _isGameLose = true;
-
-            onLoseGame?.Invoke();
         }
+    }
 
-        if (_isGameLose && (Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0)))
-        {
-            StartCoroutine(RestartGame());
+    private void OnGameLose()
+    {
+        _camera.followPlayer = false;
 
-            _isGameLose = false;
-        }
+        _restartText.gameObject.SetActive(true);
+
+        ScoresMaster.OnEndGame();
+
+        onLoseGame?.Invoke();
     }
 
     private IEnumerator RestartGame()
@@ -151,7 +156,7 @@ public class GameMaster : MonoBehaviour
 
         _mapMaster.Restart();
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.1f);
 
         _player.Unfreeze();
 

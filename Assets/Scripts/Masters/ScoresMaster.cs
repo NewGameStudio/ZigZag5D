@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
+﻿using System;
 using UnityEngine;
 
 public static class ScoresMaster
@@ -29,15 +28,19 @@ public static class ScoresMaster
     public static int Score { get; private set; }
     public static int BestScore { get; private set; }
 
+    public static event Action<int> OnScoreChanged;
+
 
     public static void OnStartGame()
     {
         Score = 0;
     }
 
-    public static void OnIncScore()
+    public static void IncScore()
     {
         Score++;
+
+        OnScoreChanged?.Invoke(Score);
     }
 
     public static void OnEndGame()
@@ -52,31 +55,18 @@ public static class ScoresMaster
 
     public static void LoadBestScore()
     {
-        if (!File.Exists(FullSavePath))
+        if (!PlayerPrefs.HasKey("BestScore"))
         {
-            BestScore = 0;
-            SaveBestScore();
-            return;
+            PlayerPrefs.SetInt("BestScore", 0);
+            PlayerPrefs.Save();
         }
 
-        using (FileStream stream = new FileStream(FullSavePath, FileMode.Open))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            BestScore = (int) formatter.Deserialize(stream);
-        }
+        BestScore = PlayerPrefs.GetInt("BestScore");
     }
 
     private static void SaveBestScore()
     {
-        if (!Directory.Exists(SaveDirectory))
-            Directory.CreateDirectory(SaveDirectory);
-
-        using (FileStream stream = new FileStream(FullSavePath, FileMode.Create))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            formatter.Serialize(stream, BestScore);
-        }
+        PlayerPrefs.SetInt("BestScore", BestScore);
+        PlayerPrefs.Save();
     }
 }

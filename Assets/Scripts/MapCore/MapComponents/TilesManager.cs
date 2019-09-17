@@ -31,7 +31,7 @@ namespace MapCore
         private int _previousDirection;
 
         private GameObjectsPool _pool;
-        private Queue<Transform> _generatedTiles;
+        private Queue<Transform> _tilesOnRoad;
 
 
         private bool CheckComponents()
@@ -57,7 +57,7 @@ namespace MapCore
         {
             Transform platform = _pool.Instantiate().transform;
 
-            _generatedTiles.Enqueue(platform);
+            _tilesOnRoad.Enqueue(platform);
 
             platform.localScale = new Vector3(3, 1, 3);
             platform.position = _player.transform.position - Vector3.up * (_player.transform.localScale.y + platform.localScale.y / 2);
@@ -86,23 +86,23 @@ namespace MapCore
 
                 StartCoroutine(PlaceTile(tile, tileTargetPosition, 0.5f));
 
-                _generatedTiles.Enqueue(tile);
-
                 _previousTile = tile;
                 _previousTilePosition = tileTargetPosition;
                 _previousDirection = directionIndex;
 
                 onTileAddedCallback?.Invoke(tile);
+
+                _tilesOnRoad.Enqueue(tile);
             }
         }
 
         private void ComputePassedTiles()
         {
-            Transform tile = _generatedTiles.Peek();
+            Transform tile = _tilesOnRoad.Peek();
 
             if ((tile.position.z + tile.localScale.x / 2 + _tileFallingDistance) < _player.transform.position.z)
             {
-                StartCoroutine(DropTile(_generatedTiles.Dequeue(), 0.8f));
+                StartCoroutine(DropTile(_tilesOnRoad.Dequeue(), 0.8f));
                 onTilePassed?.Invoke(tile);
             }
         }
@@ -168,7 +168,7 @@ namespace MapCore
             }
 
             _pool = new GameObjectsPool(_tilePrefab.gameObject, 10);
-            _generatedTiles = new Queue<Transform>();
+            _tilesOnRoad = new Queue<Transform>();
 
             CreatePlatform();
 
@@ -185,10 +185,10 @@ namespace MapCore
 
         public void Restart()
         {
-            int count = _generatedTiles.Count;
+            int count = _tilesOnRoad.Count;
 
             for (int i = 0; i < count; i++)
-                _pool.Destroy(_generatedTiles.Dequeue().gameObject);
+                _pool.Destroy(_tilesOnRoad.Dequeue().gameObject);
 
             CreatePlatform();
         }

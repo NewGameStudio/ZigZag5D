@@ -29,6 +29,7 @@ namespace UICore
             }
         }
 
+        private bool _isShowing = false;
         public bool isShowing { get; private set; } = false;
 
 
@@ -46,11 +47,9 @@ namespace UICore
             transform.localPosition = targetPosition;
         }
 
+
         public void Show()
         {
-            if (isShowing)
-                return;
-
             StopAllCoroutines();
 
             StartCoroutine(MoveWindowRoutine(_showPosition));
@@ -60,15 +59,13 @@ namespace UICore
 
         public void Hide()
         {
-            if (!isShowing)
-                return;
-
             StopAllCoroutines();
 
             StartCoroutine(MoveWindowRoutine(_hidePosition));
 
             isShowing = false;
         }
+
 
         public void ShowImmediate()
         {
