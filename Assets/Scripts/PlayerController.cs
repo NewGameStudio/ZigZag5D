@@ -8,6 +8,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 10;
     [SerializeField] private float _acceleration = 0.1f;
 
+    [Space]
+
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip _chageDirSound;
+
     private int _currentRotation = 0;
     private float[] _rotations = new float[]
     {
@@ -23,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
         set
         {
-            _movementSpeed = Mathf.Clamp(value, 1, 3f);
+            _movementSpeed = Mathf.Clamp(value, 1, 2.4f);
         }
     }
     public bool isFreezed
@@ -65,6 +70,8 @@ public class PlayerController : MonoBehaviour
 
             if (_currentRotation >= _rotations.Length)
                 _currentRotation = 0;
+
+            _audioSource.PlayOneShot(_chageDirSound);
         }
     }
 

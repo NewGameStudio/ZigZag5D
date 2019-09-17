@@ -26,6 +26,12 @@ namespace MapCore
             new Vector3(-0.5f, 0, 0.5f)
         };
 
+        [Space]
+
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private AudioClip _tilePlaceSound;
+        [SerializeField] private AudioClip _tileDropSound;
+
         private Transform _previousTile;
         private Vector3 _previousTilePosition;
         private int _previousDirection;
@@ -129,10 +135,16 @@ namespace MapCore
             }
 
             tile.transform.position = targetPosition;
+
+            if (!_audioSource.isPlaying)
+                _audioSource.PlayOneShot(_tilePlaceSound);
         }
 
         private IEnumerator DropTile(Transform tile, float time)
         {
+            if (!_audioSource.isPlaying)
+                _audioSource.PlayOneShot(_tileDropSound);
+
             WaitForEndOfFrame wait = new WaitForEndOfFrame();
 
             Vector3 direction = new Vector3(

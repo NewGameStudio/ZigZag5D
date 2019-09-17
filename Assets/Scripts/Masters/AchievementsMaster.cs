@@ -15,6 +15,11 @@ public class AchievementsMaster : MonoBehaviour
     [SerializeField] private UIWindow _achievementWindow;
     [SerializeField] private Text _achievementTextField;
 
+    [Space]
+
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip _achievementSound;
+
     private void Awake()
     {
         if (_scoreValues == null || _achievements == null || _scoreValues.Count == 0 || _achievements.Count == 0)
@@ -49,6 +54,8 @@ public class AchievementsMaster : MonoBehaviour
         _achievementTextField.text = _achievements[index];
 
         _achievementWindow.Show();
+
+        _audioSource.PlayOneShot(_achievementSound);
 
         yield return new WaitForSeconds(_achievementShowTime);
 
