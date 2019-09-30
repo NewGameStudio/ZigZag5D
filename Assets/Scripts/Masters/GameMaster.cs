@@ -16,6 +16,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] private UIWindow _menuWindow;
     [SerializeField] private Text _scoreField;
     [SerializeField] private Text _bestScoreField;
+    [SerializeField] private Text _bestWorldScore;
     [SerializeField] private Text _restartText;
 
     private MapMaster _mapMaster;
@@ -100,6 +101,8 @@ public class GameMaster : MonoBehaviour
 
     private void Start()
     {
+        LeaderboardMaster.Initialize();
+
         ScoresMaster.LoadBestScore();
 
         _mapMaster.Initialize();
@@ -113,6 +116,18 @@ public class GameMaster : MonoBehaviour
     {
         _scoreField.text = ScoresMaster.Score.ToString();
         _bestScoreField.text = ScoresMaster.BestScore.ToString();
+
+        if (LeaderboardMaster.BestWorldScore < 0 && _bestWorldScore.transform.parent.gameObject.activeSelf)
+            _bestWorldScore.transform.parent.gameObject.SetActive(false);
+
+        else if (LeaderboardMaster.BestWorldScore > 0)
+        {
+            if (!_bestWorldScore.transform.parent.gameObject.activeSelf)
+                _bestWorldScore.transform.parent.gameObject.SetActive(true);
+
+            _bestWorldScore.text = LeaderboardMaster.BestWorldScore.ToString();
+        }
+        
 
         if (_isPause)
             return;

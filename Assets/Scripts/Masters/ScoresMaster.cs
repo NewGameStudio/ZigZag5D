@@ -45,6 +45,12 @@ public static class ScoresMaster
 
     public static void OnEndGame()
     {
+        if (LeaderboardMaster.BestWorldScore < 0)
+            LeaderboardMaster.UpdateLeaderboard();
+
+        else if (BestScore > LeaderboardMaster.BestWorldScore)
+            LeaderboardMaster.SubmitPlayerScore(BestScore);
+
         if (Score > BestScore)
         {
             BestScore = Score;
