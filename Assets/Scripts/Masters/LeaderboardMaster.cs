@@ -14,15 +14,19 @@ public class LeaderboardMaster : MonoBehaviour
     {
         try
         {
+            Debug.Log("NGSMSG::OnInitialize() - start");
+
             Initialized = true;
 
             Cloud.OnInitializeComplete -= OnInitialize;
 
             UpdateLeaderboard();
+
+            Debug.Log("NGSMSG::OnInitialize() - end");
         }
         catch (System.Exception ex)
         {
-            Debug.Log("IntError" + ex.Message);
+            Debug.Log("NGSMSG::OnInitialize() - error : " + ex.Message);
         }
     }
 
@@ -30,15 +34,21 @@ public class LeaderboardMaster : MonoBehaviour
     {
         try
         {
+            Debug.Log("NGSMSG::Initialize() - start");
+
             BestWorldScore = -1;
             Initialized = false;
 
             Cloud.OnInitializeComplete += OnInitialize;
+            Cloud.OnSignInFailed += () => { Debug.Log("NGSMSG::SignInFailed"); };
+
             Cloud.Initialize(false, true);
+
+            Debug.Log("NGSMSG::Initialize() - end");
         }
         catch (System.Exception ex)
         {
-            Debug.Log("IntError" + ex.Message);
+            Debug.Log("NGSMSG::Initialize() - error : " + ex.Message);
         }
     }
 
@@ -46,24 +56,33 @@ public class LeaderboardMaster : MonoBehaviour
     {
         try
         {
+            Debug.Log("NGSMSG::UpdateLeaderboard() - start");
+
             if (!Initialized)
             {
+                Debug.Log("NGSMSG::UpdateLeaderboard() - not initialized");
                 Cloud.Initialize(false, true);
                 return;
             }
 
             Leaderboards.BestScoreInWorld.LoadScores((IScore[] scores) =>
             {
+                Debug.Log("NGSMSG::ScoresLoaded : " + (scores == null ? "null" : scores.Length.ToString()));
+
                 if (scores == null || scores.Length == 0)
                     return;
 
-                BestWorldScore = (int)scores[0].value;
+                for (int i = 0; i < scores.Length; i++)
+                    Debug.Log("NGSMSG::Score[" + i + "] - " + scores[i].value);
+
+                BestWorldScore = (int)scores[scores.Length - 1].value;
             });
 
+            Debug.Log("NGSMSG::UpdateLeaderboard() - end");
         }
         catch (System.Exception ex)
         {
-            Debug.Log("IntError" + ex.Message);
+            Debug.Log("NGSMSG::UpdateLeaderboard() - error : " + ex.Message);
         }
     }
 
@@ -71,17 +90,22 @@ public class LeaderboardMaster : MonoBehaviour
     {
         try
         {
+            Debug.Log("NGSMSG::SubmitPlayerScore() - start");
+
             if (!Initialized)
             {
+                Debug.Log("NGSMSG::SubmitPlayerScore() - not Initialized");
                 Cloud.Initialize(false, true);
                 return;
             }
 
             Leaderboards.BestScoreInWorld.SubmitScore(score);
+
+            Debug.Log("NGSMSG::SubmitPlayerScore() - end");
         }
         catch (System.Exception ex)
         {
-            Debug.Log("IntError" + ex.Message);
+            Debug.Log("NGSMSG::SubmitPlayerScore() - error : " + ex.Message);
         }
     }
 }

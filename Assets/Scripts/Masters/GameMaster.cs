@@ -127,7 +127,7 @@ public class GameMaster : MonoBehaviour
 
             _bestWorldScore.text = LeaderboardMaster.BestWorldScore.ToString();
         }
-        
+
 
         if (_isPause)
             return;
