@@ -14,11 +14,13 @@ public class AchievementsMaster : MonoBehaviour
 
     [SerializeField] private UIWindow _achievementWindow;
     [SerializeField] private Text _achievementTextField;
+    [SerializeField] private Text _championLabel;
 
     [Space]
 
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _achievementSound;
+
 
     private void Awake()
     {
@@ -41,6 +43,11 @@ public class AchievementsMaster : MonoBehaviour
         }
 
         ScoresMaster.OnScoreChanged += OnScoreChanged;
+    }
+
+    private void Update()
+    {
+        _championLabel.enabled = LeaderboardMaster.BestWorldScore > 0 && ScoresMaster.BestScore >= LeaderboardMaster.BestWorldScore;
     }
 
     private void OnScoreChanged(int score)

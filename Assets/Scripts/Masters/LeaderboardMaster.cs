@@ -2,25 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
-using CloudOnce;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 
 public class LeaderboardMaster : MonoBehaviour
 {
-    public static int BestWorldScore { get; private set; }
+    public static int BestWorldScore { get; private set; } = -1;
+
     private static bool Initialized;
+    private const string LeaderboardID = "CgkIjt-Uhc0GEAIQAg";
 
 
-    private static void OnInitialize()
+    private static void OnInitialize(bool success)
     {
         try
         {
             Debug.Log("NGSMSG::OnInitialize() - start");
 
-            Initialized = true;
+            Debug.Log("NGSMSG::Success - " + success);
 
-            Cloud.OnInitializeComplete -= OnInitialize;
+            if (success)
+            {
+                Initialized = true;
 
-            UpdateLeaderboard();
+                UpdateLeaderboard();
+            }
 
             Debug.Log("NGSMSG::OnInitialize() - end");
         }
@@ -30,19 +36,20 @@ public class LeaderboardMaster : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+
+    }
+
+
     public static void Initialize()
     {
         try
         {
             Debug.Log("NGSMSG::Initialize() - start");
 
-            BestWorldScore = -1;
-            Initialized = false;
-
-            Cloud.OnInitializeComplete += OnInitialize;
-            Cloud.OnSignInFailed += () => { Debug.Log("NGSMSG::SignInFailed"); };
-
-            Cloud.Initialize(false, true);
+            PlayGamesPlatform.Activate();
+            Social.localUser.Authenticate(OnInitialize);
 
             Debug.Log("NGSMSG::Initialize() - end");
         }
@@ -60,22 +67,23 @@ public class LeaderboardMaster : MonoBehaviour
 
             if (!Initialized)
             {
-                Debug.Log("NGSMSG::UpdateLeaderboard() - not initialized");
-                Cloud.Initialize(false, true);
+                Initialize();
                 return;
             }
 
-            Leaderboards.BestScoreInWorld.LoadScores((IScore[] scores) =>
+            Social.LoadScores(LeaderboardID, (IScore[] scores) =>
             {
-                Debug.Log("NGSMSG::ScoresLoaded : " + (scores == null ? "null" : scores.Length.ToString()));
-
                 if (scores == null || scores.Length == 0)
+                {
+                    Debug.Log("NGSMSG::scores less then 1");
+                    SubmitPlayerScore(ScoresMaster.BestScore);
                     return;
+                }
+
+                BestWorldScore = (int)scores[0].value;
 
                 for (int i = 0; i < scores.Length; i++)
-                    Debug.Log("NGSMSG::Score[" + i + "] - " + scores[i].value);
-
-                BestWorldScore = (int)scores[scores.Length - 1].value;
+                    Debug.Log("NGSMSG::Score[" + i + "] is " + scores[i].value);
             });
 
             Debug.Log("NGSMSG::UpdateLeaderboard() - end");
@@ -94,13 +102,15 @@ public class LeaderboardMaster : MonoBehaviour
 
             if (!Initialized)
             {
-                Debug.Log("NGSMSG::SubmitPlayerScore() - not Initialized");
-                Cloud.Initialize(false, true);
+                Initialize();
                 return;
             }
 
-            Leaderboards.BestScoreInWorld.SubmitScore(score);
-
+            Social.ReportScore(score, LeaderboardID, (bool success) =>
+            {
+                Debug.Log("NGSMSG::ReportState - " + success);
+            });
+            
             Debug.Log("NGSMSG::SubmitPlayerScore() - end");
         }
         catch (System.Exception ex)

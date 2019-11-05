@@ -96,15 +96,14 @@ public class GameMaster : MonoBehaviour
         _player.Reset();
         _player.Freeze();
 
+        LeaderboardMaster.Initialize();
+        ScoresMaster.LoadBestScore();
+
         _isGameLose = false;
     }
 
     private void Start()
     {
-        LeaderboardMaster.Initialize();
-
-        ScoresMaster.LoadBestScore();
-
         _mapMaster.Initialize();
 
         _camera.followPlayer = true;
@@ -156,6 +155,7 @@ public class GameMaster : MonoBehaviour
         _restartText.gameObject.SetActive(true);
 
         ScoresMaster.OnEndGame();
+        LeaderboardMaster.UpdateLeaderboard();
 
         onLoseGame?.Invoke();
     }

@@ -284,6 +284,7 @@ RectTransform:
   - {fileID: 1856867171}
   - {fileID: 808564589}
   - {fileID: 1895466389}
+  - {fileID: 1493334690}
   - {fileID: 1677528053}
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -478,6 +479,7 @@ MonoBehaviour:
   _achievementShowTime: 3
   _achievementWindow: {fileID: 198665494}
   _achievementTextField: {fileID: 501369951}
+  _championLabel: {fileID: 1493334692}
   _audioSource: {fileID: 1761770388}
   _achievementSound: {fileID: 8300000, guid: 67a8e53bd58dd094198e85cb93d21d13, type: 3}
 --- !u!1 &199267527
@@ -2069,7 +2071,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1114040580}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60e35abd56f8827428f1d3b9b8fe9188, type: 3}
+  m_Script: {fileID: 11500000, guid: 7efc848b7432a7947b0b207e15807eb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1114040583
@@ -3080,6 +3082,101 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17e5ba6bfb3567c4d8fb86b8a6db6831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1493334689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1493334690}
+  - component: {fileID: 1493334693}
+  - component: {fileID: 1493334692}
+  - component: {fileID: 1493334691}
+  m_Layer: 5
+  m_Name: Champion Label
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1493334690
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493334689}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 115533581}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 190, y: -213.79999}
+  m_SizeDelta: {x: 297.90002, y: 90.5}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1493334691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493334689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.53333336}
+  m_EffectDistance: {x: 1.5, y: 1.5}
+  m_UseGraphicAlpha: 1
+--- !u!114 &1493334692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493334689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.917791, g: 1, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 8c74bb0a481b71e4e8426d636211c290, type: 3}
+    m_FontSize: 50
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 3
+    m_MaxSize: 60
+    m_Alignment: 3
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Champion
+--- !u!222 &1493334693
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493334689}
+  m_CullTransparentMesh: 0
 --- !u!1 &1520462359
 GameObject:
   m_ObjectHideFlags: 0
@@ -3529,7 +3626,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 115533581}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
